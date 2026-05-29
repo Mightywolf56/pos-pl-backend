@@ -18,8 +18,19 @@ export class CategoriesService {
     return this.categoryRepository.save(category);
   }
 
-  findAll() {
-    return this.categoryRepository.find();
+  async findAll(take: number, skip: number) {
+    const [categories, total] = await this.categoryRepository.findAndCount({
+      take,
+      skip,
+      order: {
+        name: 'ASC',
+      },
+    });
+
+    return {
+      categories,
+      total,
+    };
   }
 
   async findOne(id: string, products?: string) {
@@ -56,6 +67,6 @@ export class CategoriesService {
   async remove(id: string) {
     const category = await this.findOne(id);
     await this.categoryRepository.softDelete(id);
-    return 'Categoria Eliminada';
+    return { message: 'Categoria Eliminada' };
   }
 }
